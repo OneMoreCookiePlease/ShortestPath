@@ -82,7 +82,6 @@ namespace ShortestPath
             private Node findByIndex(int i, int j)
             {
                 return nodes.Find((n) => { return n.I == i && n.J == j; });
-                //return new Node(i, j);
             }
 
         }
@@ -153,7 +152,7 @@ namespace ShortestPath
                 matrix[i][j] = 'A';
             }
 
-            public void setObsticle(int i, int j)
+            public void setObstacle(int i, int j)
             {
                 matrix[i][j] = '#';
             }
@@ -178,10 +177,10 @@ namespace ShortestPath
 
             matrix.setStart(3, 2);
             matrix.setDestination(4, 5);
-            matrix.setObsticle(3, 3);
-            matrix.setObsticle(4, 4);
-            matrix.setObsticle(5, 5);
-            matrix.setObsticle(2, 2);
+            matrix.setObstacle(3, 3);
+            matrix.setObstacle(4, 4);
+            matrix.setObstacle(5, 5);
+            matrix.setObstacle(2, 2);
 
             Graph g = new Graph(matrix.GetMatrix);
 
