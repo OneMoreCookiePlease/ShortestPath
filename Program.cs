@@ -57,17 +57,17 @@ namespace ShortestPath
         {
 
             private List<Node> nodes;
-            private KeyValuePair<int, int> start;
-            private KeyValuePair<int, int> finish;
+            private Tuple<int, int> start;
+            private Tuple<int, int> finish;
 
             public Node Start
             {
-                get { return findByIndex(start.Key, start.Value); }
+                get { return findByIndex(start.Item1, start.Item2); }
             }
 
             public Node Finish
             {
-                get { return findByIndex(finish.Key, finish.Value); }
+                get { return findByIndex(finish.Item1, finish.Item2); }
             }
 
             public Graph(List<List<char>> matrix)
@@ -83,8 +83,8 @@ namespace ShortestPath
                         if (matrix[i][j] != '#')
                         {
                             Node node = new Node(i, j);
-                            if (matrix[i][j] == 'A') start = new KeyValuePair<int, int>(i, j);
-                            if (matrix[i][j] == 'B') finish = new KeyValuePair<int, int>(i, j);
+                            if (matrix[i][j] == 'A') start = new Tuple<int, int>(i, j);
+                            if (matrix[i][j] == 'B') finish = new Tuple<int, int>(i, j);
                             nodes.Add(node);
                         }
 
@@ -123,29 +123,28 @@ namespace ShortestPath
             static public void Apply(Matrix matrix)
             {
                 Graph g = new Graph(matrix.GetMatrix);
-                Dictionary<Node, KeyValuePair<Node, int>> distance = new Dictionary<Node, KeyValuePair<Node, int>>(); //(actual node, (node added by, distance))
+                Dictionary<Node, Tuple<Node, int>> distance = new Dictionary<Node, Tuple<Node, int>>(); //(actual node, (node added by, distance))
                 List<Node> check = new List<Node>();
 
-                distance.Add(g.Start, new KeyValuePair<Node, int>(null, 0));
-
+                distance.Add(g.Start, new Tuple<Node, int>(null, 0));
 
                 while (!distance.ContainsKey(g.Finish))
                 {
 
-                    Node node = distance.OrderBy(n => n.Value.Value).Where((n) => { return !check.Contains(n.Key); }).FirstOrDefault().Key;
+                    Node node = distance.OrderBy(n => n.Value.Item2).Where((n) => { return !check.Contains(n.Key); }).FirstOrDefault().Key;
                     foreach (Node item in node.Neighbors.SkipWhile((n) => { return check.Contains(n); }))
                     {
                         if (distance.ContainsKey(item))
                         {
-                            if (distance[item].Value > distance[node].Value + 1)
+                            if (distance[item].Item2 > distance[node].Item2 + 1)
                             {
-                                distance[item] = new KeyValuePair<Node, int>(node, distance[node].Value + 1);
+                                distance[item] = new Tuple<Node, int>(node, distance[node].Item2 + 1);
                             }
 
                         }
                         else
                         {
-                            distance[item] = new KeyValuePair<Node, int>(node, distance[node].Value + 1);
+                            distance[item] = new Tuple<Node, int>(node, distance[node].Item2 + 1);
                         }
 
                     }
@@ -154,14 +153,14 @@ namespace ShortestPath
                 }
 
                 Node curr = distance.Last().Key;
-                curr = distance[curr].Key;
+                curr = distance[curr].Item1;
                 while (curr != g.Start)
                 {
                     matrix.GetMatrix[curr.I][curr.J] = '~';
-                    curr = distance[curr].Key;
+                    curr = distance[curr].Item1;
                 }
 
-                Console.Out.WriteLine("Shortest path from A to 8 takes {0} steps", distance[g.Finish].Value);
+                Console.Out.WriteLine("Shortest path from A to B takes {0} steps", distance[g.Finish].Item2);
             }
 
         }
@@ -240,8 +239,8 @@ namespace ShortestPath
         {
             Matrix matrix = new Matrix();
 
-            matrix.setStart(0, 0);
-            matrix.setDestination(9, 9);
+            matrix.setStart(4, 0);
+            matrix.setDestination(5, 9);
             matrix.setObstacle(3, 3);
             matrix.setObstacle(4, 4);
             matrix.setObstacle(5, 5);
