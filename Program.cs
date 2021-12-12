@@ -111,9 +111,7 @@ namespace ShortestPath
 
             private Node findByIndex(int i, int j)
             {
-                Node node = nodes.Find((n) => { return n.I == i && n.J == j; });
-                if (node == null) return new Node(i, j);
-                else return node;
+                return nodes.Find((n) => { return n.I == i && n.J == j; });
             }
 
         }
@@ -156,7 +154,7 @@ namespace ShortestPath
                 curr = distance[curr].Item1;
                 while (curr != g.Start)
                 {
-                    matrix.GetMatrix[curr.I][curr.J] = '~';
+                    matrix.setPathTile(curr.I, curr.J);
                     curr = distance[curr].Item1;
                 }
 
@@ -223,7 +221,7 @@ namespace ShortestPath
 
             public void setPathTile(int i, int j)
             {
-                matrix[i][j] = 'o';
+                matrix[i][j] = '.';
             }
 
             public void setDestination(int i, int j)
