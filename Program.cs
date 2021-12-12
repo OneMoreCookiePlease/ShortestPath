@@ -57,7 +57,7 @@ namespace ShortestPath
         {
 
             private List<Node> nodes;
-            private KeyValuePair<int,int> start;
+            private KeyValuePair<int, int> start;
             private KeyValuePair<int, int> finish;
 
             public Node Start
@@ -83,16 +83,26 @@ namespace ShortestPath
                         if (matrix[i][j] != '#')
                         {
                             Node node = new Node(i, j);
-                            if (i != 0 && matrix[i - 1][j] != '#') node.addNeighbor(findByIndex(i - 1, j));
-                            if (i != 9 && matrix[i + 1][j] != '#') node.addNeighbor(findByIndex(i + 1, j));
-                            if (j != 0 && matrix[i][j - 1] != '#') node.addNeighbor(findByIndex(i, j - 1));
-                            if (j != 9 && matrix[i][j + 1] != '#') node.addNeighbor(findByIndex(i, j + 1));
-
                             if (matrix[i][j] == 'A') start = new KeyValuePair<int, int>(i, j);
                             if (matrix[i][j] == 'B') finish = new KeyValuePair<int, int>(i, j);
                             nodes.Add(node);
                         }
 
+                    }
+                }
+
+                for (int i = 0; i < 10; i++)
+                {
+                    for (int j = 0; j < 10; j++)
+                    {
+                        if (matrix[i][j] != '#')
+                        {
+                            Node node = findByIndex(i, j);
+                            if (i != 0 && matrix[i - 1][j] != '#') node.addNeighbor(findByIndex(i - 1, j));
+                            if (i != 9 && matrix[i + 1][j] != '#') node.addNeighbor(findByIndex(i + 1, j));
+                            if (j != 0 && matrix[i][j - 1] != '#') node.addNeighbor(findByIndex(i, j - 1));
+                            if (j != 9 && matrix[i][j + 1] != '#') node.addNeighbor(findByIndex(i, j + 1));
+                        }
                     }
                 }
 
@@ -114,48 +124,45 @@ namespace ShortestPath
             {
                 Graph g = new Graph(matrix.GetMatrix);
                 //Dictionary<Node, int> _check = new Dictionary<Node, int>();
-                Dictionary<Node, int> distance = new Dictionary<Node, int>();
+                Dictionary<Node, KeyValuePair<Node, int>> distance = new Dictionary<Node, KeyValuePair<Node, int>>(); //(actual node, (distance, node added by))
                 List<Node> check = new List<Node>();
 
                 //check.Add(g.Start);
-                distance.Add(g.Start, 0);
+                distance.Add(g.Start, new KeyValuePair<Node, int>(null, 0));
 
 
                 while (!distance.ContainsKey(g.Finish))
                 {
 
-                    Node node = distance.OrderBy(n => n.Value).Where((n) => { return !check.Contains(n.Key); }).FirstOrDefault().Key;
-                    foreach (Node item in node.Neighbors.SkipWhile((n)=> { return check.Contains(n) && distance.ContainsKey(n); }))
+                    Node node = distance.OrderBy(n => n.Value.Value).Where((n) => { return !check.Contains(n.Key); }).FirstOrDefault().Key;
+                    foreach (Node item in node.Neighbors.SkipWhile((n) => { return check.Contains(n); }))
                     {
                         if (distance.ContainsKey(item))
                         {
-                            if (distance[item] > distance[node] + 1)
+                            if (distance[item].Value > distance[node].Value + 1)
                             {
-                                distance[item] = distance[node] + 1;
+                                //distance[item] = distance[node];
+                                distance[item] = new KeyValuePair<Node, int>(node, distance[node].Value + 1);
                             }
 
                         }
                         else
                         {
-                            distance.Add(item, distance[node] + 1);
+                            distance[item] = new KeyValuePair<Node, int>(node, distance[node].Value + 1);
                         }
-
-
-                        //distance.Add(item, 1);
 
                     }
                     check.Add(node);
 
-
-
                 }
 
-
-
-
-
-
-
+                Node curr = distance.Last().Key;
+                curr = distance[curr].Key;
+                while (curr != g.Start)
+                {
+                    matrix.GetMatrix[curr.I][curr.J] = '~';
+                    curr = distance[curr].Key;
+                }
             }
 
         }
@@ -235,7 +242,7 @@ namespace ShortestPath
             Matrix matrix = new Matrix();
 
             matrix.setStart(3, 2);
-            matrix.setDestination(4, 5);
+            matrix.setDestination(2, 3);
             matrix.setObstacle(3, 3);
             matrix.setObstacle(4, 4);
             matrix.setObstacle(5, 5);
