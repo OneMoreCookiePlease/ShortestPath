@@ -123,11 +123,9 @@ namespace ShortestPath
             static public void Apply(Matrix matrix)
             {
                 Graph g = new Graph(matrix.GetMatrix);
-                //Dictionary<Node, int> _check = new Dictionary<Node, int>();
-                Dictionary<Node, KeyValuePair<Node, int>> distance = new Dictionary<Node, KeyValuePair<Node, int>>(); //(actual node, (distance, node added by))
+                Dictionary<Node, KeyValuePair<Node, int>> distance = new Dictionary<Node, KeyValuePair<Node, int>>(); //(actual node, (node added by, distance))
                 List<Node> check = new List<Node>();
 
-                //check.Add(g.Start);
                 distance.Add(g.Start, new KeyValuePair<Node, int>(null, 0));
 
 
@@ -141,7 +139,6 @@ namespace ShortestPath
                         {
                             if (distance[item].Value > distance[node].Value + 1)
                             {
-                                //distance[item] = distance[node];
                                 distance[item] = new KeyValuePair<Node, int>(node, distance[node].Value + 1);
                             }
 
@@ -163,6 +160,8 @@ namespace ShortestPath
                     matrix.GetMatrix[curr.I][curr.J] = '~';
                     curr = distance[curr].Key;
                 }
+
+                Console.Out.WriteLine("Shortest path from A to 8 takes {0} steps", distance[g.Finish].Value);
             }
 
         }
@@ -241,12 +240,15 @@ namespace ShortestPath
         {
             Matrix matrix = new Matrix();
 
-            matrix.setStart(3, 2);
-            matrix.setDestination(2, 3);
+            matrix.setStart(0, 0);
+            matrix.setDestination(9, 9);
             matrix.setObstacle(3, 3);
             matrix.setObstacle(4, 4);
             matrix.setObstacle(5, 5);
             matrix.setObstacle(2, 2);
+            matrix.setObstacle(9, 5);
+            matrix.setObstacle(5, 0);
+            matrix.setObstacle(4, 1);
 
             Dijkstra.Apply(matrix);
 
